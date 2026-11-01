@@ -1,5 +1,5 @@
 ---
-name: c-programming
+name: cprogramming
 description: Use when creating, editing, reviewing, debugging, building, or testing C code or C projects.
 ---
 
