@@ -26,6 +26,12 @@ Check that the selected compiler, target, and tools support the requested option
 5. Build the applicable configuration and run available checks that exercise the change. When unit tests are requested, integrate Unity as described in the testing reference. Verify platform-specific behavior on the targets actually available, and report unavailable toolchains or checks.
 6. Report what changed, which builds or checks ran, and any material limitations or unresolved decisions. Distinguish intended target support from support verified by execution.
 
+## Debugging with GDB
+
+For runtime debugging, use GDB when it is available and compatible with the target. Follow the [GDB debugging reference](references/debugging.md) to reproduce a failure, inspect a running program or core dump, and verify the diagnosis. If GDB cannot be used, report the limitation and use an available compatible debugger where appropriate.
+
+When a program needs to capture its own stack trace, follow the [in-process stack-trace guidance](references/debugging.md#in-process-stack-traces).
+
 ## Project stage
 
 | Stage | Priority |
