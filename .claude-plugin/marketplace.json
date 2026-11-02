@@ -1,0 +1,14 @@
+{
+  "name": "skilled-c-local",
+  "description": "C programming guidance and debugging tools.",
+  "owner": {
+    "name": "Christian Luppi"
+  },
+  "plugins": [
+    {
+      "name": "skilled-c",
+      "source": "./",
+      "description": "C programming guidance with GDB MCP tools."
+    }
+  ]
+}

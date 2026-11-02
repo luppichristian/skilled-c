@@ -1,7 +1,7 @@
 # CI and releases
 
 - Use `MAJOR.MINOR.PATCH-DD.MM.YYYY` as the artifact version format.
-- For new projects, set up GitHub workflows: run `ci.yml` on pushes and pull requests, and `cd.yml` when a new tag is pushed. The tag workflow builds artifacts and attaches them to a GitHub Release.
+- For GitHub Actions, use `ci.yml` on pushes and pull requests, and `cd.yml` when a new tag is pushed. The tag workflow builds artifacts and attaches them to a GitHub Release.
 - Recommended runners are `ubuntu-latest` for Linux/Unix, `macos-latest` for macOS, and `windows-latest` for Windows.
 - Cross-compile for different architectures on these systems when needed.
 

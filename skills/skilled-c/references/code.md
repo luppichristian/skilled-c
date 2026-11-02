@@ -8,7 +8,7 @@
 
 ## Style
 
-- Format, indent, and space code for readability. Follow project `clang-format` and `clang-tidy` configuration instead of inventing a formatting or naming scheme. Use [Clang tooling](tooling.md) to install the skill's defaults when those files are missing.
+- Format, indent, and space code for readability. Follow project `clang-format` and `clang-tidy` configuration instead of inventing a formatting or naming scheme. See [Clang tooling](tooling.md) for configuration and defaults.
 - Keep code minimal and simple without compromising functionality. Use consistent case conventions within each group: functions, types, variables, globals, constants, and macros.
 - Use fixed-size types as much as possible and custom types instead of built-ins, including `u32`, `u16`, `s32`, `s8`, `f32`, `f64`, `u32x`, `s16x`, `sz`, `up`, `sp`, and `pd`.
 - Define signed `s8`/`s16`/`s32`/`s64` and unsigned `u8`/`u16`/`u32`/`u64` with corresponding fixed-width `<stdint.h>` types. The `x` variants use corresponding `int_fastN_t` or `uint_fastN_t` types, such as `s16x` and `u32x`.

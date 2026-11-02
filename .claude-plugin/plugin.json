@@ -1,0 +1,16 @@
+{
+  "name": "skilled-c",
+  "version": "0.1.0",
+  "description": "C programming guidance with GDB MCP tools.",
+  "author": {
+    "name": "Christian Luppi"
+  },
+  "repository": "https://github.com/luppichristian/skilled-c",
+  "license": "MIT",
+  "mcpServers": {
+    "gdb-mcp": {
+      "command": "uvx",
+      "args": ["--with", "mcp<2", "--from", "${CLAUDE_PLUGIN_ROOT}/mcp/gdb-mcp", "gdb-mcp-server"]
+    }
+  }
+}

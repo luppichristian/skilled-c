@@ -1,0 +1,20 @@
+{
+  "name": "skilled-c-local",
+  "interface": {
+    "displayName": "Skilled C"
+  },
+  "plugins": [
+    {
+      "name": "skilled-c",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

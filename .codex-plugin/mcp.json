@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "gdb-mcp": {
+      "command": "uvx",
+      "args": ["--with", "mcp<2", "--from", "./mcp/gdb-mcp", "gdb-mcp-server"],
+      "cwd": ".",
+      "env_vars": ["GDB_PATH", "GDB_MCP_LOG_LEVEL"],
+      "startup_timeout_sec": 120
+    },
+    "renderdoc-mcp": {
+      "enabled": false,
+      "command": "uvx",
+      "args": ["--from", "./mcp/renderdoc-mcp", "renderdoc-mcp"],
+      "cwd": ".",
+      "env_vars": [
+        "APPDATA",
+        "RENDERDOC_BACKEND",
+        "RENDERDOC_QRENDERDOC_PATH",
+        "RENDERDOC_INSTALL_ALWAYS_LOAD",
+        "RENDERDOC_BRIDGE_TIMEOUT_SECONDS",
+        "RENDERDOC_CAPTURE_SESSION_IDLE_SECONDS",
+        "RENDERDOC_CAPTURE_MAX_SESSIONS",
+        "RENDERDOC_NATIVE_MODULE_DIR",
+        "RENDERDOC_NATIVE_PYTHON_EXE",
+        "RENDERDOC_NATIVE_DLL_DIR"
+      ],
+      "startup_timeout_sec": 120
+    }
+  }
+}

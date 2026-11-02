@@ -1,9 +1,12 @@
 # Clang tooling
 
-Use the project's `.clang-format` and `.clang-tidy` files. If either is absent, copy only the missing file from the skill's [formatter](../assets/.clang-format) or [analyzer](../assets/.clang-tidy) configuration; do not replace an existing one.
+Use local Clang tools when available, such as `clangd` for diagnostics and symbol navigation, `clang-format` for formatting, and `clang-tidy` for analysis.
+
+Use the project's `.clang-format` and `.clang-tidy` files. If a configuration is needed and absent, the plugin provides a default [formatter](../assets/.clang-format) and [analyzer](../assets/.clang-tidy); do not replace an existing configuration.
 
 - Format C sources and headers with `clang-format` using project configuration. Check without modifying files using `clang-format --dry-run --Werror` on the intended files.
 - Run `clang-tidy` with the project's compilation database when available, e.g. `-p build`. CMake's `CMAKE_EXPORT_COMPILE_COMMANDS=ON` produces one with supported generators such as Ninja and Makefiles.
+- Use the project's actual compilation database and target configuration so language mode, includes, defines, and compiler options match the C build. Check header diagnostics in the correct C context, and review changes against the project's build and checks.
 - The copied default's header filter may not match project headers because it assumes an `include/` path with forward slashes. To check headers, use a suitable `--header-filter` override, such as `--header-filter='.*'`, or a narrower expression verified against actual project paths. System-header diagnostics remain suppressed unless explicitly enabled.
-- Without a compilation database, pass the actual language version, include paths, target options, and relevant definitions after `--` so analysis matches the build. Report unavailable tooling or checks rather than claiming they passed.
+- Without a compilation database, pass the actual language version, include paths, target options, and relevant definitions after `--` so analysis matches the build.
 - The default analyzer configuration includes identifier-naming rules and treats its warnings as errors. Follow the selected project configuration instead of introducing a separate naming style.

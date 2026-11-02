@@ -1,10 +1,9 @@
 # Performance
 
-- Profile and measure nontrivial optimizations. Apply an obvious SIMD improvement promptly when its benefit is clear, and verify correctness and performance on representative targets.
+- Profile and measure nontrivial optimizations. Use SIMD where it benefits the workload, and verify correctness and performance on representative targets.
 - Use inline assembly or intrinsics for suitable performance-critical functions, with a supported fallback.
 - Track cache misses when investigating relevant bottlenecks.
 - Reorder struct members and set alignment and padding appropriately.
-- Use intrinsics where possible and SIMD where it makes sense.
 
 For logging and profiling scope contracts, see [Code conventions](code.md#diagnostics).
 
