@@ -1,0 +1,6 @@
+[submodule "mcp/gdb-mcp"]
+	path = mcp/gdb-mcp
+	url = https://github.com/Ipiano/gdb-mcp.git
+[submodule "mcp/renderdoc-mcp"]
+	path = mcp/renderdoc-mcp
+	url = https://github.com/scarletfantasy/renderdoc-mcp.git
