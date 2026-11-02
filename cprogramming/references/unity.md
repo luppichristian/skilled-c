@@ -1,49 +1,18 @@
 # Unity unit tests
 
-When the user wants unit tests, integrate Unity into the project's build. Its core consists of `unity.c`, `unity.h`, and `unity_internals.h`; it is not header-only. This skill does not bundle Unity.
+When unit tests are requested, integrate Unity into the build. Its core is `unity.c`, `unity.h`, and `unity_internals.h`; it is not header-only or bundled with this skill.
 
-- Compile and link `unity.c`, the test source, and the code under test into a test executable. Add the Unity and project header directories to that executable's include path.
-- For the default hand-written runner, define both `setUp` and `tearDown` functions, even if they are empty. Start the suite with `UNITY_BEGIN()`, register each case with `RUN_TEST`, and return `UNITY_END()` from `main`. A generated runner or a different Unity configuration may supply those functions instead.
+- Compile and link `unity.c`, test source, and code under test into a test executable. Add Unity and project header directories to its include path.
+- For the default hand-written runner, define `setUp` and `tearDown`, even if empty. Start the suite with `UNITY_BEGIN()`, register each case with `RUN_TEST`, and return `UNITY_END()` from `main`. A generated runner or different Unity configuration may supply those functions instead.
 - Exercise observable behavior, representative branches, boundary values, and relevant error cases. Keep test code separate from production code.
-- With CMake, register the executable with CTest and propagate its exit status. For script or Make builds, run it as part of the test command and propagate failures.
+- With CMake, register the executable with CTest and propagate its exit status. For script or Make builds, run it in the test command and propagate failures.
 
-For CMake, declare Unity with `FetchContent` and pin it to an immutable revision. Support the `FETCHCONTENT_SOURCE_DIR_UNITY` override so an existing local source tree can be used without downloading it. If obtaining the dependency requires network access, respect the project's constraints and report when it is unavailable.
+## CMake integration
 
-For example, when the project has `tests/project_tests.c`:
+Include CTest; place dependency acquisition, the Unity library, test executable, and test registration inside `if(BUILD_TESTING)`. Use `FetchContent_Declare` with the name `unity` to fetch `https://github.com/ThrowTheSwitch/Unity.git` at an immutable revision, for example `54f864cf6027a50f4cc5424616e9e01e1bb729da`. The address is a build dependency, not documentation the model must retrieve. Respect project network constraints and report when the dependency is unavailable.
 
-```cmake
-include(CTest)
-if(BUILD_TESTING)
-    include(FetchContent)
-    FetchContent_Declare(unity
-        GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-        GIT_TAG 54f864cf6027a50f4cc5424616e9e01e1bb729da
-        SOURCE_SUBDIR __fetch_only__
-    )
-    FetchContent_MakeAvailable(unity)
+To avoid Unity's upstream CMake target and its warning options that can fail with `clang-cl`, set `SOURCE_SUBDIR` to the nonexistent `__fetch_only__`, call `FetchContent_MakeAvailable(unity)`, and build `${unity_SOURCE_DIR}/src/unity.c` as a local static library with `${unity_SOURCE_DIR}/src` as a public include directory. For example, build this library as required C11 with extensions off.
 
-    add_library(unity_local STATIC "${unity_SOURCE_DIR}/src/unity.c")
-    target_include_directories(unity_local PUBLIC "${unity_SOURCE_DIR}/src")
-    set_target_properties(unity_local PROPERTIES
-        C_STANDARD 11
-        C_STANDARD_REQUIRED ON
-        C_EXTENSIONS OFF
-    )
-    add_executable(project_tests tests/project_tests.c)
-    if(CMAKE_C_COMPILER_ID STREQUAL "Clang" AND
-       CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-        target_compile_options(project_tests PRIVATE /clang:-std=gnu23)
-    else()
-        set_target_properties(project_tests PROPERTIES
-            C_STANDARD 23
-            C_STANDARD_REQUIRED ON
-            C_EXTENSIONS ON
-        )
-    endif()
-    target_link_libraries(project_tests PRIVATE unity_local)
-    # Also link the project target or sources under test.
-    add_test(NAME project_tests COMMAND project_tests)
-endif()
-```
+Create the test executable from the test source, link the local Unity library and project target or sources under test, and register it with `add_test`. For the requested GNU C23 mode, configure the test target for required C23 with extensions; for MSVC-style `clang-cl`, use `/clang:-std=gnu23` instead. Probe the mode with the selected compiler as in [Build and tools](build.md).
 
-The non-existent `SOURCE_SUBDIR` makes the source available without adding Unity's upstream CMake target; the local target builds its core directly and avoids inheriting upstream warning options that can fail with `clang-cl`. The test target uses the requested GNU C23 mode; probe that mode with the selected compiler as described in [Build and tools](build.md). Configure with `-DFETCHCONTENT_SOURCE_DIR_UNITY=<local-unity-source>` to use an existing checkout. This override bypasses `GIT_TAG`; inspect the local source revision when available and report a mismatch or an unverified version rather than claiming the pin was enforced. The repository address above is a build dependency, not documentation the model must retrieve.
+Support `-DFETCHCONTENT_SOURCE_DIR_UNITY=<local-unity-source>` to use a local checkout without downloading. This override bypasses `GIT_TAG`; inspect the local revision when available and report a mismatch or unverified version rather than claiming the pin was enforced.

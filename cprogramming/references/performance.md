@@ -6,8 +6,10 @@
 - Reorder struct members and set alignment and padding appropriately.
 - Use intrinsics where possible and SIMD where it makes sense.
 
-Compare optimized and baseline implementations using the same build configuration and representative inputs. Record the workload, target, and measurements; investigate cache behavior when it is relevant. Do not change externally visible struct layouts without accounting for the API or ABI contract.
+For logging and profiling scope contracts, see [Code conventions](code.md#diagnostics).
 
-For inline assembly, constrain inputs and outputs correctly, declare relevant clobbers, preserve the platform calling convention, and document the supported compiler and architecture. Keep and verify a suitable non-assembly implementation for other targets.
+Compare optimized and baseline implementations using the same build configuration and representative inputs. Record workload, target, and measurements; investigate cache behavior when relevant. Account for API or ABI contracts before changing externally visible struct layouts.
+
+For inline assembly, constrain inputs and outputs correctly, declare relevant clobbers, preserve the platform calling convention, and document supported compiler and architecture. Keep and verify a suitable non-assembly implementation for other targets.
 
 For SIMD, also read [Portability](portability.md) for capability detection and fallbacks.
