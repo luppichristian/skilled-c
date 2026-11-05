@@ -8,7 +8,7 @@
     {
       "name": "skilled-c",
       "source": "./",
-      "description": "Work on C projects with coding conventions, project rules, and GDB debugging tools."
+      "description": "C projects: coding conventions, project rules, and GDB debugging tools."
     }
   ]
 }

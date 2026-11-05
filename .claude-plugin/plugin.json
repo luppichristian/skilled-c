@@ -1,7 +1,7 @@
 {
   "name": "skilled-c",
   "version": "0.1.0",
-  "description": "Work on C projects with coding conventions, project rules, and GDB debugging tools.",
+  "description": "C projects: coding conventions, project rules, and GDB debugging tools.",
   "author": {
     "name": "Christian Luppi"
   },

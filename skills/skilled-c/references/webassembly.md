@@ -1,6 +1,6 @@
 # WebAssembly
 
-Use Emscripten's `emcc` for WebAssembly. Select the appropriate runtime and output format, and preserve a native build where required. A successful build alone does not establish behavior in the intended runtime.
+Use Emscripten's `emcc` for WebAssembly. Select the appropriate runtime and output format; preserve a native build where required. A successful build alone does not establish behavior in the intended runtime.
 
 ## SIMD
 
@@ -10,4 +10,4 @@ Use Emscripten's `emcc` for WebAssembly. Select the appropriate runtime and outp
 ## Threads
 
 - Enable Emscripten pthread support at compile and link time with `-pthread` when needed. Keep a non-threaded path where required by the target environment.
-- Browser pthread builds depend on shared-memory support and the appropriate cross-origin isolation headers in the deployment environment.
+- Browser pthread builds depend on shared-memory support and appropriate cross-origin isolation headers in the deployment environment.

@@ -2,45 +2,45 @@
 
 ## Modules
 
-- A module consists of a header (`.h`) and implementation (`.c`), named `project_module.h` and `project_module.c`.
-- Expose functionality in the header. The header and implementation may each include other modules.
+- A module has a header (`.h`) and implementation (`.c`), named `project_module.h` and `project_module.c`.
+- Expose functionality in the header. Both header and implementation may include other modules.
 - Prefer fewer modules grouping related functionality.
 
 ## Style
 
-- Format, indent, and space code for readability. Follow project `clang-format` and `clang-tidy` configuration instead of inventing a formatting or naming scheme. See [Clang tooling](tooling.md) for configuration and defaults.
-- Keep code minimal and simple without compromising functionality. Use consistent case conventions within each group: functions, types, variables, globals, constants, and macros.
-- Use fixed-size types as much as possible and custom types instead of built-ins, including `u32`, `u16`, `s32`, `s8`, `f32`, `f64`, `u32x`, `s16x`, `sz`, `up`, `sp`, and `pd`.
+- Format, indent, and space code for readability. Follow project `clang-format` and `clang-tidy` configuration rather than invent a formatting or naming scheme. See [Clang tooling](tooling.md) for configuration and defaults.
+- Keep code minimal and simple without compromising functionality. Use consistent case within each group: functions, types, variables, globals, constants, and macros.
+- Use fixed-size types whenever possible and custom types instead of built-ins, including `u32`, `u16`, `s32`, `s8`, `f32`, `f64`, `u32x`, `s16x`, `sz`, `up`, `sp`, and `pd`.
 - Define signed `s8`/`s16`/`s32`/`s64` and unsigned `u8`/`u16`/`u32`/`u64` with corresponding fixed-width `<stdint.h>` types. The `x` variants use corresponding `int_fastN_t` or `uint_fastN_t` types, such as `s16x` and `u32x`.
 - Define `sz` as `size_t`, `up` as `uintptr_t`, `sp` as `intptr_t`, and `pd` as `ptrdiff_t`. Reuse existing definitions where appropriate; do not guess unresolved aliases.
-- Define `f32` as `float` and `f64` as `double`. Specify and compile-time check fixed-size alias widths; document target-dependent sizes of fast, size, and pointer-related types. Width alone does not establish a floating-point representation.
+- Define `f32` as `float` and `f64` as `double`. Specify and compile-time check fixed-size alias widths; document target-dependent sizes of fast, size, and pointer-related types. Width alone does not establish floating-point representation.
 - Where supported by the selected compiler and target, also define `f16`, `s128`, `u128`, and `f128` with checked widths and feature indicators. Do not silently replace an unavailable type with one of a different width.
 - Use [Primitive types](types.md) for the complete definitions and portability constraints.
 - Allow global variables only in implementation files; prefer local persistent variables over globals.
 - Define structs, enums, and unions with `typedef`, e.g. `typedef struct { } struct_name;`. Never add an `_f` suffix to type definitions.
 - Use only C-style `/* ... */` comments, not `//` comments.
-- Use `const` and `constexpr` as much as possible. Prefer complete words for types and functions over obscure abbreviations.
+- Use `const` and `constexpr` as much as possible. Prefer complete words over obscure abbreviations for types and functions.
 - In C23, `constexpr` declares objects, not functions; its initializer must satisfy constant-expression requirements. Use `const` for runtime-initialized values and verify compiler support for the selected dialect.
-- Base dynamic memory management around arenas; build more specialized allocators on top when necessary. For allocation and lifetime decisions, read [Arena allocation](arenas.md).
+- Base dynamic memory management around arenas; build specialized allocators on top when needed. For allocation and lifetime decisions, read [Arena allocation](arenas.md).
 - For pointer, arithmetic, string, and resource invariants, read [C correctness](correctness.md).
 
 ## Data flow and state
 
-Trace the inputs, outputs, ownership, mutations, and side effects of a subsystem. Describe the observable operation across calls or frames, not just the name of one helper. Where several cases have the same intended effects, a common representation or operation can reduce callers' special cases. When simplifying an interface, check the effects of every underlying path; hiding a branch does not remove its possible behavior.
+Trace a subsystem's inputs, outputs, ownership, mutations, and side effects. Describe observable operation across calls or frames, not just one helper's name. Where cases have the same intended effects, a common representation or operation can reduce callers' special cases. When simplifying an interface, check every underlying path's effects; hiding a branch does not remove its possible behavior.
 
-Identify which data is authoritative and derive other views from it when practical. If a cache or copy is retained, define how it is updated or invalidated, who owns it, and how readers see changes. Choose recomputation or caching according to the workload. Before overwriting useful inputs or intermediate results, consider whether undo, diagnostics, another consumer, or recovery needs them; retain or reconstruct them with an appropriate lifetime and storage bound when needed.
+Identify authoritative data and derive other views from it when practical. If retaining a cache or copy, define its update or invalidation, ownership, and how readers see changes. Choose recomputation or caching according to the workload. Before overwriting useful inputs or intermediate results, consider whether undo, diagnostics, another consumer, or recovery needs them; retain or reconstruct them with an appropriate lifetime and storage bound when needed.
 
-For work that benefits from batching or deferred execution, a command buffer can separate recording a request from carrying it out. Define command order, ownership and lifetime of referenced data, error reporting, and when execution is complete. Do not assume recording a command has already performed its effect.
+For work benefiting from batching or deferred execution, a command buffer can separate recording a request from carrying it out. Define command order, referenced data ownership and lifetime, error reporting, and when execution is complete. Do not assume recording a command has already performed its effect.
 
 ## API results
 
 Where practical, prefer returning an object or handle with checkable validity over a null pointer. An invalid object must be safe for its operations and cleanup: operations should do no harmful work and must report failure where success is checked. Document how callers check validity and results. Status codes and `errno` are also acceptable; respect required external APIs and platform interfaces.
 
-For public APIs, state ownership of each returned resource, borrowed-data lifetime, and how and when resources are released. Validate external input through normal error paths, not assertions. On failure, leave outputs in a documented state and release acquired resources unless ownership is explicitly transferred to the caller.
+For public APIs, state ownership of each returned resource, borrowed-data lifetime, and how and when resources are released. Validate external input through normal error paths, not assertions. On failure, leave outputs in a documented state; release acquired resources unless ownership is explicitly transferred to the caller.
 
-When an empty value is meaningful, design and document a safe empty state and its operations. For suitable types, C initialization such as `T value = {0};` can produce that state. Do not assume that `memset` to zero has the required representation for every pointer, floating-point type, or other object. An immutable sentinel can make absent read-only values safe to inspect, but it must never be treated as writable storage. Distinguish an empty result from failure whenever callers need to act on the difference.
+When an empty value is meaningful, design and document a safe empty state and its operations. For suitable types, C initialization such as `T value = {0};` can produce that state. Do not assume `memset` to zero has the required representation for every pointer, floating-point type, or other object. An immutable sentinel can make absent read-only values safe to inspect, but it must never be treated as writable storage. Distinguish an empty result from failure whenever callers need to act on the difference.
 
-An operation may return useful partial results alongside diagnostics when continuing is safe; state which results are valid and which failures prevent further work. A log or message list does not replace a required failure status. When practical, check prerequisites and acquire resources before changing important state, while still handling later failures and preserving or reporting the resulting state.
+An operation may return useful partial results alongside diagnostics when continuing is safe; state which results are valid and which failures prevent further work. A log or message list does not replace a required failure status. When practical, check prerequisites and acquire resources before changing important state; still handle later failures and preserve or report the resulting state.
 
 ## Object identity
 
@@ -48,9 +48,9 @@ If references can outlive a slot's occupant, use a stable identity or a generati
 
 ## Contexts and callbacks
 
-When related state and dependencies need to be passed together, group them in an explicit context object. Independent instances or threads can use separate contexts; document initialization, cleanup, ownership, lifetime, and whether the context or dependencies are shared. Separate contexts do not make shared dependencies thread-safe; use [Concurrency](concurrency.md) for synchronization.
+Group related state and dependencies that must be passed together in an explicit context object. Independent instances or threads can use separate contexts; document initialization, cleanup, ownership, lifetime, and whether the context or dependencies are shared. Separate contexts do not make shared dependencies thread-safe; use [Concurrency](concurrency.md) for synchronization.
 
-When callers supply behavior, pair a typed callback function pointer with an opaque user-data pointer. Document how long the callback, user data, and arguments remain valid; when and on which thread it runs; and whether it may reenter the API. For registered callbacks, specify unregistration and when in-flight calls have finished so user data can be released safely. Respect existing project and external callback interfaces.
+When callers supply behavior, pair a typed callback function pointer with an opaque user-data pointer. Document the callback, user data, and argument lifetimes; when and on which thread it runs; and whether it may reenter the API. For registered callbacks, specify unregistration and when in-flight calls have finished so user data can be released safely. Respect existing project and external callback interfaces.
 
 ## Macros
 
