@@ -24,11 +24,27 @@
 - Base dynamic memory management around arenas; build more specialized allocators on top when necessary. For allocation and lifetime decisions, read [Arena allocation](arenas.md).
 - For pointer, arithmetic, string, and resource invariants, read [C correctness](correctness.md).
 
+## Data flow and state
+
+Trace the inputs, outputs, ownership, mutations, and side effects of a subsystem. Describe the observable operation across calls or frames, not just the name of one helper. Where several cases have the same intended effects, a common representation or operation can reduce callers' special cases. When simplifying an interface, check the effects of every underlying path; hiding a branch does not remove its possible behavior.
+
+Identify which data is authoritative and derive other views from it when practical. If a cache or copy is retained, define how it is updated or invalidated, who owns it, and how readers see changes. Choose recomputation or caching according to the workload. Before overwriting useful inputs or intermediate results, consider whether undo, diagnostics, another consumer, or recovery needs them; retain or reconstruct them with an appropriate lifetime and storage bound when needed.
+
+For work that benefits from batching or deferred execution, a command buffer can separate recording a request from carrying it out. Define command order, ownership and lifetime of referenced data, error reporting, and when execution is complete. Do not assume recording a command has already performed its effect.
+
 ## API results
 
 Where practical, prefer returning an object or handle with checkable validity over a null pointer. An invalid object must be safe for its operations and cleanup: operations should do no harmful work and must report failure where success is checked. Document how callers check validity and results. Status codes and `errno` are also acceptable; respect required external APIs and platform interfaces.
 
 For public APIs, state ownership of each returned resource, borrowed-data lifetime, and how and when resources are released. Validate external input through normal error paths, not assertions. On failure, leave outputs in a documented state and release acquired resources unless ownership is explicitly transferred to the caller.
+
+When an empty value is meaningful, design and document a safe empty state and its operations. For suitable types, C initialization such as `T value = {0};` can produce that state. Do not assume that `memset` to zero has the required representation for every pointer, floating-point type, or other object. An immutable sentinel can make absent read-only values safe to inspect, but it must never be treated as writable storage. Distinguish an empty result from failure whenever callers need to act on the difference.
+
+An operation may return useful partial results alongside diagnostics when continuing is safe; state which results are valid and which failures prevent further work. A log or message list does not replace a required failure status. When practical, check prerequisites and acquire resources before changing important state, while still handling later failures and preserving or reporting the resulting state.
+
+## Object identity
+
+If references can outlive a slot's occupant, use a stable identity or a generation-checked handle instead of assuming a reused address still names the same object. Validate the storage lifetime, index, occupancy, and generation before accessing the object. Define deletion, concurrent access, generation wraparound, and what happens to already borrowed pointers. If deletion can occur concurrently, hold a lock, pin, or equivalent lifetime guarantee across validation and use; checking a generation alone does not prevent a subsequent deletion.
 
 ## Contexts and callbacks
 
@@ -43,6 +59,8 @@ Prefer functions or `static inline` functions when a macro is unnecessary. In fu
 ## Intrusive containers
 
 When suitable, embed links in caller-owned objects so containers need no separate nodes. Specify who owns and releases objects, when to unlink them, which mutations invalidate iteration, and how concurrent access is synchronized. Use separate link fields for simultaneous membership in multiple containers.
+
+Choose arrays, linked nodes, or another representation from the actual access and mutation pattern. Lists can support stable node addresses, insertion, and splicing; dependent pointer traversal and per-node overhead can be costly. A linked node can hold a batch of elements to reduce link and allocation overhead. Measure representative workloads, and do not confuse stable addresses with validity after removal or reuse.
 
 ## Diagnostics
 

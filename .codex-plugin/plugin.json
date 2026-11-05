@@ -1,15 +1,15 @@
 {
   "name": "skilled-c",
   "version": "0.1.0",
-  "description": "C programming guidance with GDB and optional RenderDoc MCP tools.",
+  "description": "Work on C projects with coding conventions, project rules, GDB, and optional RenderDoc tools.",
   "license": "MIT",
   "skills": "./skills/",
   "mcpServers": "./.codex-plugin/mcp.json",
   "requires_local_executor": true,
   "interface": {
     "displayName": "Skilled C",
-    "shortDescription": "C programming guidance and tools",
-    "longDescription": "Work on C projects with reusable guidance and bundled MCP servers for GDB and RenderDoc capture analysis.",
+    "shortDescription": "C project conventions and tools",
+    "longDescription": "Work on C projects using coding conventions and project rules, with MCP tools for GDB and optional RenderDoc capture analysis.",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Read", "Write"]
   }

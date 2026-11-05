@@ -2,6 +2,8 @@
 
 Base dynamic allocation around arenas grouping allocations by lifetime. Choose the lifetime first, such as a request, frame, loaded document, or application state, and allocate related data from its arena. Reuse an existing implementation when appropriate. Build pools, free lists, or other specialized allocators atop arenas when individual reuse or different allocation behavior is needed.
 
+Different collections, their elements, and associated strings or diagnostics can share an arena when they really have the same release boundary. An arena does not by itself manage external resources or make an object valid after its own removal or the arena's rewind.
+
 ## Allocation and lifetime
 
 - Document arena ownership, when it may be reset or released, and whether allocations are zero-initialized. Every pointer into a reset or released region becomes invalid.

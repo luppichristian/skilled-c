@@ -1,6 +1,6 @@
 {
-  "name": "skilled-c-local",
-  "description": "C programming guidance and debugging tools.",
+  "name": "skilled-c",
+  "description": "C project conventions, coding rules, and development tools.",
   "owner": {
     "name": "Christian Luppi"
   },
@@ -8,7 +8,7 @@
     {
       "name": "skilled-c",
       "source": "./",
-      "description": "C programming guidance with GDB MCP tools."
+      "description": "Work on C projects with coding conventions, project rules, and GDB debugging tools."
     }
   ]
 }

@@ -25,6 +25,8 @@ Compiler options and tool support depend on the selected compiler and target.
 
 Unity builds are a compilation technique; they are unrelated to the Unity unit-testing library.
 
+For generated C and its build dependencies, see [Table-driven code generation](code-generation.md).
+
 ## Clang frontends
 
 The options above use the GNU-style `clang` driver. With MSVC-style `clang-cl`, forward C dialect and warning options with `/clang:`, e.g. `/clang:-std=gnu23` and `/clang:-Wformat=2`. Use `/Z7` or `/Zi` for debug information and `/clang:-fno-omit-frame-pointer` for frame pointers. Use the frontend's sanitizer option at compilation and linking; verify the complete configuration rather than assuming a GNU-style option was accepted.

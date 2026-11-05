@@ -5,7 +5,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/luppichristian/skilled-c?style=flat)](https://github.com/luppichristian/skilled-c)
 [![License: MIT](https://img.shields.io/github/license/luppichristian/skilled-c?style=flat)](LICENSE)
 
-Skilled C is a local plugin for working on C projects with Codex or Claude Code. It combines a C programming skill with an MCP server for GDB and optional RenderDoc capture analysis.
+Skilled C is a local plugin for working on C projects with Codex or Claude Code. It provides coding conventions and project guidance, with MCP tools for GDB and optional RenderDoc capture analysis.
 
 The [skill](skills/skilled-c/SKILL.md) provides guidance for project setup, builds, code conventions, testing, debugging, and performance. It takes existing project conventions and user instructions into account and can fall back to local tools when a server is unavailable.
 
@@ -41,14 +41,14 @@ From the repository root, register the local marketplace and install the plugin:
 
 ```sh
 codex plugin marketplace add .
-codex plugin add skilled-c@skilled-c-local
+codex plugin add skilled-c@skilled-c
 ```
 
 Alternatively, open this repository in a supported Codex desktop client, restart the app, choose the Skilled C repository marketplace in the Plugins Directory, and install Skilled C there. See the [OpenAI plugin documentation](https://developers.openai.com/plugins/build/plugins) for local marketplaces.
 
 Start a new Codex chat after installation. The plugin runs locally and does not need a separate MCP configuration in `config.toml`.
 
-Codex installs a cached copy of the plugin. Keep the submodules initialized before installing it; GitHub source ZIPs and clones without `--recurse-submodules` do not include their contents. After changing the checkout or updating submodules, run `codex plugin add skilled-c@skilled-c-local` again to refresh the installed copy, then start a new chat.
+Codex installs a cached copy of the plugin. Keep the submodules initialized before installing it; GitHub source ZIPs and clones without `--recurse-submodules` do not include their contents. After changing the checkout or updating submodules, run `codex plugin add skilled-c@skilled-c` again to refresh the installed copy, then start a new chat.
 
 ### Claude Code
 
@@ -56,7 +56,7 @@ From the repository root, register the local marketplace and install the plugin:
 
 ```sh
 claude plugin marketplace add .
-claude plugin install skilled-c@skilled-c-local
+claude plugin install skilled-c@skilled-c
 ```
 
 Start a new Claude Code session and use `/mcp` to check the GDB server. The local marketplace reads the plugin from this checkout, so keep the checkout and its submodules in place. After changing the plugin, use `/reload-plugins` in a session or start a new one. See the [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins) for details.
@@ -67,7 +67,7 @@ If the first server launch times out while `uv` downloads dependencies, set `MCP
 
 Open a C project in Codex or Claude Code and ask for the work you need. For example:
 
-> Use the Skilled C skill to review this project's build setup and run its tests.
+> Use the Skilled C skill to review this project's coding conventions and build setup.
 
 The skill applies its relevant references and can use the configured MCP tools when they are available. See the [skill and reference list](skills/skilled-c/SKILL.md) for the topics it covers and the [MCP integration guide](skills/skilled-c/references/mcp.md) for server-specific guidance and fallbacks.
 
@@ -82,7 +82,7 @@ GDB is resolved from `PATH` by default. Set `GDB_PATH` for a different executabl
 In Codex, add the following to your user configuration (`~/.codex/config.toml`), then start a new chat:
 
 ```toml
-[plugins."skilled-c@skilled-c-local".mcp_servers.renderdoc-mcp]
+[plugins."skilled-c@skilled-c".mcp_servers.renderdoc-mcp]
 enabled = true
 ```
 
@@ -100,16 +100,6 @@ The upstream server's default `qrenderdoc` backend installs its bundled extensio
 ## Updating the bundled servers
 
 Server revisions are pinned as Git submodules. To update a server, check out the desired upstream revision in its `mcp/` directory and record the new submodule commit. Server dependencies are resolved by `uvx`; `gdb-mcp` is constrained to MCP versions below 2 for compatibility with its current upstream API.
-
-## Validation
-
-Run the integration tests from the repository root:
-
-```sh
-python -m unittest discover -s tests -v
-```
-
-The tests exercise a copied Claude plugin from another workspace and, when Claude Code is on `PATH`, install it in a temporary Claude state directory. They also install a clean copy in a temporary Codex state directory and start its configured MCP servers. They start a GDB session when GDB is on `PATH` or `GDB_PATH` is set. On Windows, they enable RenderDoc against a temporary application-data directory. Tests can be skipped when their prerequisites are unavailable. The checks do not require a real RenderDoc capture; capture replay still depends on the locally installed RenderDoc and GPU support.
 
 ## License
 
