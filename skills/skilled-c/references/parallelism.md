@@ -6,7 +6,7 @@ Use multiple cores when independent work and workload size justify scheduling an
 
 For suitable data-parallel operations, workers can execute the same routine with a lane index and count. Each lane handles its data portion; one lane can perform work that must happen once.
 
-To partition `count` items across `lanes` workers, require `lanes > 0` and `0 <= lane < lanes`. Let `q = count / lanes` and `r = count % lanes`. The lane's half-open range starts at `lane * q + min(lane, r)` and contains `q + (lane < r)` items, even when items are fewer than lanes.
+For balanced, disjoint half-open ranges, including when items are fewer than workers, see [lane_partition.h](../assets/examples/lane_partition.h). It validates the lane count and index and leaves the output unchanged on failure.
 
 - Keep independent writes in disjoint ranges or synchronize appropriately. Join or synchronize before consuming other lanes' results.
 - If one lane prepares shared data, synchronize before other lanes read it. Every participating lane must reach each group barrier in the same order; avoid early returns that strand peers.
@@ -17,5 +17,3 @@ To partition `count` items across `lanes` workers, require `lanes > 0` and `0 <=
 - Coordinate failures and cancellation across the group so every required barrier is reached or the group has a defined way to abort; one lane must not strand the others.
 
 For a reduction, combine per-lane partial results after synchronization or use an appropriate atomic operation. Account for integer overflow and floating-point changes from summing in a different order. For a broadcast, the producing lane writes to group-local shared storage; synchronize, let other lanes read it, and synchronize before reuse. The primitive must provide the memory visibility the shared data requires.
-
-Source of the lane-group approach: Ryan Fleury, [Multi-Core By Default](https://www.dgtlgrove.com/p/multi-core-by-default) (2025).

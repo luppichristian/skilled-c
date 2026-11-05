@@ -10,12 +10,7 @@
 
 - Format, indent, and space code for readability. Follow project `clang-format` and `clang-tidy` configuration rather than invent a formatting or naming scheme. See [Clang tooling](tooling.md) for configuration and defaults.
 - Keep code minimal and simple without compromising functionality. Use consistent case within each group: functions, types, variables, globals, constants, and macros.
-- Use fixed-size types whenever possible and custom types instead of built-ins, including `u32`, `u16`, `s32`, `s8`, `f32`, `f64`, `u32x`, `s16x`, `sz`, `up`, `sp`, and `pd`.
-- Define signed `s8`/`s16`/`s32`/`s64` and unsigned `u8`/`u16`/`u32`/`u64` with corresponding fixed-width `<stdint.h>` types. The `x` variants use corresponding `int_fastN_t` or `uint_fastN_t` types, such as `s16x` and `u32x`.
-- Define `sz` as `size_t`, `up` as `uintptr_t`, `sp` as `intptr_t`, and `pd` as `ptrdiff_t`. Reuse existing definitions where appropriate; do not guess unresolved aliases.
-- Define `f32` as `float` and `f64` as `double`. Specify and compile-time check fixed-size alias widths; document target-dependent sizes of fast, size, and pointer-related types. Width alone does not establish floating-point representation.
-- Where supported by the selected compiler and target, also define `f16`, `s128`, `u128`, and `f128` with checked widths and feature indicators. Do not silently replace an unavailable type with one of a different width.
-- Use [Primitive types](types.md) for the complete definitions and portability constraints.
+- Prefer fixed-width types when possible and project-defined aliases instead of built-ins, including the fast, size, and pointer-related aliases. Follow [Primitive types](types.md) for definitions, optional types, and portability checks.
 - Allow global variables only in implementation files; prefer local persistent variables over globals.
 - Define structs, enums, and unions with `typedef`, e.g. `typedef struct { } struct_name;`. Never add an `_f` suffix to type definitions.
 - Use only C-style `/* ... */` comments, not `//` comments.
@@ -61,6 +56,12 @@ Prefer functions or `static inline` functions when a macro is unnecessary. In fu
 When suitable, embed links in caller-owned objects so containers need no separate nodes. Specify who owns and releases objects, when to unlink them, which mutations invalidate iteration, and how concurrent access is synchronized. Use separate link fields for simultaneous membership in multiple containers.
 
 Choose arrays, linked nodes, or another representation from the actual access and mutation pattern. Lists can support stable node addresses, insertion, and splicing; dependent pointer traversal and per-node overhead can be costly. A linked node can hold a batch of elements to reduce link and allocation overhead. Measure representative workloads, and do not confuse stable addresses with validity after removal or reuse.
+
+## Hash tables
+
+When a hash table suits the workload, define key equality, ownership, and lifetime. Equal keys must produce the same hash; resolve collisions by checking equality rather than treating a hash as an identity. Keep stored keys unchanged, or remove and reinsert them when their equality or hash changes. Choose and measure a hash suitable for the key distribution; for attacker-controlled keys, consider a keyed hash and resource limits rather than assuming a simple noncryptographic hash prevents collision attacks.
+
+For open addressing, bound probes even when the table is full. Deletion must preserve lookup chains, for example with tombstones or a correct reinsertion strategy. In a unique-key map, insertion must continue past a tombstone as needed to find an existing equal key before reusing the slot. Account for tombstones when deciding to rebuild or grow. Check capacity arithmetic, define insertion and allocation failure, and keep the old table usable if a resize fails. Document whether insertion, deletion, or resizing invalidates iterators and borrowed pointers. Exercise collisions, deletion followed by lookup or reinsertion, full tables, growth, and failure paths.
 
 ## Diagnostics
 

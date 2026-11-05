@@ -39,7 +39,7 @@ Choose Bash (`build.sh`) for simple builds, Make (`Makefile`) for multiple confi
 
 - **Bash:** Call tools directly, support command-line configuration if necessary, and assume tools are present.
 - **Make:** Use for multiple platforms, architectures, or configurations. Do not use third-party libraries unless they are header-only.
-- **CMake:** Use the most recent available version and `FetchContent` for third-party libraries. Prefer portable options over compiler-specific arguments.
+- **CMake:** Use the most recent available version and `FetchContent` for third-party libraries when suitable and permitted. For a separately supplied SDK such as FMOD, accept a local SDK path and use appropriate imported targets. Prefer portable options over compiler-specific arguments.
 
 For CMake, request C23 with extensions and require the standard using `CMAKE_C_STANDARD`, `CMAKE_C_EXTENSIONS`, and `CMAKE_C_STANDARD_REQUIRED` when the selected CMake and frontend support that mapping. If CMake cannot generate a C23 flag for `clang-cl`, do not initialize the affected target with the unsupported C23 standard property; add `/clang:-std=gnu23` to its compile options and compile-probe the dialect. Do not silently fall back to older C. Enable unity builds for project targets where they work; disable them where targets cannot be combined safely.
 
