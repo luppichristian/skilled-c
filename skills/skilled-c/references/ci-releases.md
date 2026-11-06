@@ -9,6 +9,8 @@
 
 - Use a runner matrix for supported desktop platforms. On each runner, check out source, select Clang, configure the project's actual build system, and build requested configurations.
 - Run configured project tests, including CTest for CMake projects, and configured formatting or static-analysis checks.
+- For relevant Linux targets, add a Docker-based matrix on `ubuntu-latest` for the selected distribution releases in [Linux distribution testing](testing.md#linux-distributions), alongside any Windows and macOS jobs. Use the same container definitions and build/test steps locally where practical; check out the source on the runner and run the builds and tests inside each container.
+- Select explicit image releases or digests and update them deliberately. Install distribution-specific dependencies with the appropriate package manager, use a Clang version that supports the project's required C dialect, and account for different shells, C libraries, runtimes, and sanitizer availability. Propagate build and test failures for every matrix entry.
 - Respect platform runtime and sanitizer limits in [Build and tools](build.md). A successful cross-compile does not establish successful execution on the target architecture.
 
 ## Tag-triggered release

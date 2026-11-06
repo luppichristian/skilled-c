@@ -1,7 +1,23 @@
-# Copyright (c) 2026 Christian Luppi. MIT license; see LICENSE.
 cmake_minimum_required(VERSION 3.21)
+
+# Default to Clang for command-line generators without a compiler or toolchain.
+# IDE generators and explicit toolchains select their own compiler.
+if(NOT DEFINED CMAKE_C_COMPILER AND
+   NOT CMAKE_TOOLCHAIN_FILE AND
+   "$ENV{CMAKE_TOOLCHAIN_FILE}" STREQUAL "" AND
+   "$ENV{CC}" STREQUAL "" AND
+   NOT CMAKE_GENERATOR MATCHES "^(Visual Studio|Xcode)")
+    set(CMAKE_C_COMPILER clang)
+endif()
+
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 project(unity_example LANGUAGES C)
+
+if(NOT CMAKE_C_COMPILER_ID MATCHES "^(Clang|AppleClang)$")
+    message(FATAL_ERROR
+        "Clang is required; configure a fresh build with a Clang toolchain "
+        "(use -T ClangCL with a Visual Studio generator).")
+endif()
 
 include(CTest)
 if(BUILD_TESTING)

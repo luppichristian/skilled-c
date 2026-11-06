@@ -1,4 +1,3 @@
-/* Copyright (c) 2026 Christian Luppi. MIT license; see LICENSE. */
 #include "unity.h"
 
 /* Replace this function with the project code being tested. */

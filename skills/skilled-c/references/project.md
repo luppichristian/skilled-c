@@ -12,6 +12,6 @@ Start each in-scope, project-owned `.h` and `.c` file with the complete project 
 
 ## Setup
 
-For a new project without a root `.gitignore`, use the plugin's [default](../assets/.gitignore). Preserve existing ignore rules; review copied patterns to avoid hiding files that need tracking.
+For a new project without a root `.gitignore`, use the plugin's [example](../assets/.gitignore) for inspiration rather than copying it verbatim. Preserve existing ignore rules; select patterns that do not hide files that need tracking.
 
 Put build artifacts under `build`; use development and release configurations where appropriate. See [Build and tools](build.md) for build-system guidance.

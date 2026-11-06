@@ -14,6 +14,8 @@ When cases overlap, prioritize SDL + Vulkan for extreme performance if it expose
 
 These are selection preferences, not performance guarantees. Profile representative workloads and check target hardware, drivers, API versions, and required features. SDL GPU's Metal, Direct3D 12, and Vulkan backends do not themselves provide a browser renderer; for WebAssembly, verify the selected SDL version and use a supported browser rendering path. Android Vulkan support depends on device capabilities. Vulkan on Apple platforms needs a compatible implementation such as MoltenVK; check feature support rather than assuming every extension is available.
 
+For compute shader selection, workload tradeoffs, and CPU–GPU coordination, see [Parallel execution](parallelism.md#gpu-compute).
+
 ## Resource lifetime and synchronization
 
 Recording or submitting GPU work does not generally mean it has finished. Keep resources, descriptors, upload storage, and their referenced contents valid for the period required by the chosen API. Before the CPU overwrites storage still in use, wait for the relevant completion signal or use another safe resource or region. GPU-side reuse can instead be ordered and synchronized according to the API. Track completion before recycling frame or staging storage and before destruction when the API requires it.
